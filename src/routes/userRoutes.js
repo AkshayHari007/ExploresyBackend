@@ -65,7 +65,7 @@ userRouter.get("/editors", verifyToken, async (req, res) => {
   }
 });
 
-userRouter.get("/admins",verifyToken, async (req, res) => {
+userRouter.get("/admins", verifyToken, async (req, res) => {
   try {
     console.log(req.body);
     res.header("Access-Control-Allow-Origin", "*");
@@ -92,6 +92,80 @@ userRouter.get("/admins",verifyToken, async (req, res) => {
     res.send({
       success: 0,
       message: "Something went wrong while getting Admin details" + error,
+    });
+  }
+});
+
+userRouter.post("/roleid", verifyToken, async (req, res) => {
+  try {
+    console.log(req.body);
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header(
+      "Access-Control-Allow-Methods:GET,POST,PATCH,PUT,DELETE,OPTIONS"
+    );
+
+    id = req.body._id;
+    UserRole = req.body.UserRole;
+
+    await Userdata.findByIdAndUpdate(
+      {
+        _id: id,
+      },
+      {
+        $set: {
+          UserRole: UserRole,
+        },
+      }
+    ).then(function (user) {
+      if (!user) {
+        return res.send({
+          success: 0,
+          message: "No User Found",
+        });
+      } else {
+        return res.status(200).send({
+          success: 1,
+          message: "User update is successful",
+        });
+      }
+    });
+  } catch (error) {
+    res.send({
+      success: 0,
+      message: "Something went wrong while finding the User details" + error,
+    });
+  }
+});
+
+userRouter.delete("/delete/:id", verifyToken, async (req, res) => {
+  try {
+    console.log(req.body);
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header(
+      "Access-Control-Allow-Methods:GET,POST,PATCH,PUT,DELETE,OPTIONS"
+    );
+
+    id = req.params.id;
+
+    await Userdata.findByIdAndDelete({
+      _id: id,
+    }).then(function (user) {
+      if (!user) {
+        return res.send({
+          success: 0,
+          message: "No User Found",
+        });
+      } else {
+        return res.status(200).send({
+          success: 1,
+          message: "User delete is successful",
+        });
+      }
+    });
+  } catch (error) {
+    res.send({
+      success: 0,
+      message: "Something went wrong while finding the User details" + error,
     });
   }
 });

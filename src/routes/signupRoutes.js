@@ -37,14 +37,8 @@ signupRouter.post('/adduser', async (req, res) => {
     try {
         // console.log('body', req.body)
         let existingUser = await Userdata.findOne({
-            FirstName: req.body.FirstName,
-            LastName: req.body.LastName,
-            Gender: req.body.Gender,
-            Dob: req.body.Dob,
-            Mobile: req.body.Mobile,
-            Email: req.body.Email,
-            Password: req.body.Password,
-            UserRole: req.body.UserRole
+            
+            Email: req.body.Email
         })
         if (!existingUser) {
 
@@ -67,7 +61,7 @@ signupRouter.post('/adduser', async (req, res) => {
         } else {
             res.json({
                 success: 0,
-                message: 'User data already exist',
+                message: 'This Email Id already exist',
             })
         }
     } catch (error) {
