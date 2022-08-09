@@ -14,19 +14,20 @@ const jwt = require("jsonwebtoken");
 var bodyparser = require("body-parser");
 
 const app = new express();
-app.use(cors({origin:'*'})); // for resource sharing
+app.use(cors({ origin: "*" })); // for resource sharing
 app.use(bodyparser.json());
 
 const signupRouter = require("./src/routes/signupRoutes");
 const loginRouter = require("./src/routes/loginRoutes");
 const userRouter = require("./src/routes/userRoutes");
 const categoryRouter = require("./src/routes/categoryRoutes");
+const postRouter = require("./src/routes/postRoutes");
 
-// app.use(express.static("../Frontend/src/assets/images"));
 app.use("/signup", signupRouter);
 app.use("/login", loginRouter);
 app.use("/users", userRouter);
 app.use("/category", categoryRouter);
+app.use("/post", postRouter);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

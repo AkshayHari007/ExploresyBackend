@@ -1,6 +1,6 @@
 const express = require("express");
-const categoryRouter = express.Router();
-const Categorydata = require("../model/categoryData");
+const postRouter = express.Router();
+const Postdata = require("../model/postData");
 const verifyToken = require("./verifyToken");
 const multer = require("multer");
 // const path = require("path");
@@ -18,24 +18,26 @@ const storage = multer.diskStorage({
 // ! Upload parameter for multer
 const upload = multer({ storage: storage });
 
-categoryRouter.get("/fetch", async (req, res) => {
+postRouter.post("/fetchmypost", async (req, res) => {
   try {
     console.log(req.body);
     res.header("Access-Control-Allow-Origin", "*");
     res.header(
       "Access-Control-Allow-Methods:GET,POST,PATCH,PUT,DELETE,OPTIONS"
     );
-    await Categorydata.find().then(function (category) {
-      if (!category) {
+    await Postdata.find({
+      Email: req.body.Email,
+    }).then(function (post) {
+      if (!post) {
         return res.send({
           success: 0,
-          message: "No Category Found",
+          message: "No Post Found",
         });
       } else {
         return res.status(200).send({
           success: 1,
-          message: "Categories found",
-          data: category,
+          message: "Posts found",
+          data: post,
         });
       }
     });
@@ -47,85 +49,81 @@ categoryRouter.get("/fetch", async (req, res) => {
   }
 });
 
-categoryRouter.get("/fetchlist", async (req, res) => {
+postRouter.get("/fetch", async (req, res) => {
   try {
     console.log(req.body);
     res.header("Access-Control-Allow-Origin", "*");
     res.header(
       "Access-Control-Allow-Methods:GET,POST,PATCH,PUT,DELETE,OPTIONS"
     );
-    await Categorydata.find().then(function (category) {
-      if (!category) {
+    await Postdata.find().then(function (post) {
+      if (!post) {
         return res.send({
           success: 0,
-          message: "No Category Found",
+          message: "No Posts Found",
         });
       } else {
         return res.status(200).send({
           success: 1,
           message: "Categories found",
-          data: category,
+          data: post,
         });
       }
     });
   } catch (error) {
     res.send({
       success: 0,
-      message: "Something went wrong while getting Categories:" + error,
+      message: "Something went wrong while getting Posts:" + error,
     });
   }
 });
 
-categoryRouter.post(
-  "/addcategory",
+postRouter.post(
+  "/addpost",
   verifyToken,
-  upload.single("image"),
+  upload.single("Image"),
   async (req, res) => {
     try {
       console.log("body", req.body);
-      let existingCategory = await Categorydata.findOne({
-        Title: req.body.Title,
-      });
-      if (!existingCategory) {
-        const category = new Categorydata({
-          Title: req.body.title,
+
+      if (req.body.Stat === "1") {
+        const post = new Postdata({
+          FirstName: req.body.FirstName,
+          LastName: req.body.LastName,
+          Email: req.body.Email,
+          Category: req.body.Category,
+          Content: req.body.Content,
           Image: req.file.filename,
         });
-        let data = await category.save();
+        let data = await post.save();
         res.json({
           success: 1,
-          message: "Category successfully saved.",
+          message: "Post successfully saved.",
           data: data,
         });
       } else {
+        const post = new Postdata({
+          FirstName: req.body.FirstName,
+          LastName: req.body.LastName,
+          Email: req.body.Email,
+          Category: req.body.Category,
+          Content: req.body.Content,
+          Image: req.body.Image,
+        });
+        let data = await post.save();
         res.json({
-          success: 0,
-          message: "This Category already exist",
+          success: 1,
+          message: "Post successfully saved.",
+          data: data,
         });
       }
     } catch (error) {
       res.json({
         success: 0,
-        message: "Something went wrong while saving the category" + error,
+        message: "Something went wrong while saving the post" + error,
       });
     }
   }
 );
 
-module.exports = categoryRouter;
-
-// upload(req, res, function (err) {
-//   if (err instanceof multer.MulterError) {
-//     res.json({
-//       success: 0,
-//       message: "A Multer error occurred when uploading Category.",
-//     });
-//   } else if (err) {
-//     res.json({
-//       success: 0,
-//       message: "An unknown error occurred when uploading Category:" + err,
-//     });
-//   }
-
-//   // Everything went fine.
-// });
+module.exports = postRouter;
