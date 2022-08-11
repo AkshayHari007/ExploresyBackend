@@ -49,6 +49,37 @@ postRouter.post("/fetchmypost", async (req, res) => {
   }
 });
 
+postRouter.post("/fetchcategory", async (req, res) => {
+  try {
+    console.log(req.body);
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header(
+      "Access-Control-Allow-Methods:GET,POST,PATCH,PUT,DELETE,OPTIONS"
+    );
+    await Postdata.find({
+      Category: req.body.category,
+    }).then(function (post) {
+      if (!post) {
+        return res.send({
+          success: 0,
+          message: "No Post Found",
+        });
+      } else {
+        return res.status(200).send({
+          success: 1,
+          message: "Posts found",
+          data: post,
+        });
+      }
+    });
+  } catch (error) {
+    res.send({
+      success: 0,
+      message: "Something went wrong while getting Categories:" + error,
+    });
+  }
+});
+
 postRouter.get("/fetch", async (req, res) => {
   try {
     console.log(req.body);
@@ -125,5 +156,81 @@ postRouter.post(
     }
   }
 );
+
+postRouter.post("/editpost", verifyToken, async (req, res) => {
+  try {
+    console.log(req.body);
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header(
+      "Access-Control-Allow-Methods:GET,POST,PATCH,PUT,DELETE,OPTIONS"
+    );
+
+    id = req.body._id;
+    Category = req.body.Category;
+    Content = req.body.Content;
+
+    await Postdata.findByIdAndUpdate(
+      {
+        _id: id,
+      },
+      {
+        $set: {
+          Category: Category,
+          Content: Content,
+        },
+      }
+    ).then(function (user) {
+      if (!user) {
+        return res.send({
+          success: 0,
+          message: "No Post Found",
+        });
+      } else {
+        return res.status(200).send({
+          success: 1,
+          message: "Post update is successful",
+        });
+      }
+    });
+  } catch (error) {
+    res.send({
+      success: 0,
+      message: "Something went wrong while finding the Post details" + error,
+    });
+  }
+});
+
+postRouter.delete("/delete/:id", verifyToken, async (req, res) => {
+  try {
+    console.log(req.body);
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header(
+      "Access-Control-Allow-Methods:GET,POST,PATCH,PUT,DELETE,OPTIONS"
+    );
+
+    id = req.params.id;
+
+    await Postdata.findByIdAndDelete({
+      _id: id,
+    }).then(function (user) {
+      if (!user) {
+        return res.send({
+          success: 0,
+          message: "No Post Found",
+        });
+      } else {
+        return res.status(200).send({
+          success: 1,
+          message: "Post delete is successful",
+        });
+      }
+    });
+  } catch (error) {
+    res.send({
+      success: 0,
+      message: "Something went wrong while finding the Post details" + error,
+    });
+  }
+});
 
 module.exports = postRouter;
