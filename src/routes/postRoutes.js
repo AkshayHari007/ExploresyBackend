@@ -44,7 +44,7 @@ postRouter.post("/fetchmypost", async (req, res) => {
   } catch (error) {
     res.send({
       success: 0,
-      message: "Something went wrong while getting Categories:" + error,
+      message: "Something went wrong while getting Post:" + error,
     });
   }
 });

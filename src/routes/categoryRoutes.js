@@ -112,6 +112,82 @@ categoryRouter.post(
   }
 );
 
+categoryRouter.post("/editpost", verifyToken, async (req, res) => {
+  try {
+    console.log(req.body);
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header(
+      "Access-Control-Allow-Methods:GET,POST,PATCH,PUT,DELETE,OPTIONS"
+    );
+
+    id = req.body._id;
+    Title = req.body.Title;
+
+    await Categorydata.findByIdAndUpdate(
+      {
+        _id: id,
+      },
+      {
+        $set: {
+          Title: Title,
+        },
+      }
+    ).then(function (user) {
+      if (!user) {
+        return res.send({
+          success: 0,
+          message: "No Category Found",
+        });
+      } else {
+        return res.status(200).send({
+          success: 1,
+          message: "Category update is successful",
+        });
+      }
+    });
+  } catch (error) {
+    res.send({
+      success: 0,
+      message:
+        "Something went wrong while finding the Category details" + error,
+    });
+  }
+});
+
+categoryRouter.delete("/delete/:id", verifyToken, async (req, res) => {
+  try {
+    console.log(req.body);
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header(
+      "Access-Control-Allow-Methods:GET,POST,PATCH,PUT,DELETE,OPTIONS"
+    );
+
+    id = req.params.id;
+
+    await Categorydata.findByIdAndDelete({
+      _id: id,
+    }).then(function (user) {
+      if (!user) {
+        return res.send({
+          success: 0,
+          message: "No Category Found",
+        });
+      } else {
+        return res.status(200).send({
+          success: 1,
+          message: "Category delete is successful",
+        });
+      }
+    });
+  } catch (error) {
+    res.send({
+      success: 0,
+      message:
+        "Something went wrong while finding the Category details" + error,
+    });
+  }
+});
+
 module.exports = categoryRouter;
 
 // upload(req, res, function (err) {
